@@ -1,0 +1,13 @@
+angles = ...
+[0,0,10;... % rot Z Achse Uhrzeigersinn
+0,10,0; ...  % rot X Achse Uhrzeigersinn
+10,0,0];
+
+% 20,10,0; ...
+% 0,25,30;...
+% -100,20,5;...
+% 0,0,40];
+% 
+%     
+%     
+
