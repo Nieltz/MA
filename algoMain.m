@@ -1,26 +1,27 @@
 function algoMain()
 
+addpath('.\RecordedData');
+
 clear all; close all;
 
 %% Configure Test
-filename='Sensor4.txt';
-%samplingRateAccel = 
-%samplingRateGyro = 
+filename='N-Left-Right.txt';
 
-ts= 0.0005;
+ts= 0.001;
+
 
 filterWidth = 5;
 
-[lines, accData, gyroData]=readSensData(filename);
-[aX, aY, aZ, gX, gY, gZ] = processSensData(lines, accData(2), gyroData(3));
+[lines, accData, gyroData]=readSensData(filename,'Car');
+[aZ, aY, aX, gX, gY, gZ] = processSensData(lines, accData(2), gyroData(3),'Car');
 
-KalFilt(aX,aY,aZ,gX,gY,ts);
 
 
 % Remove Offsets in Acceleration Data
-aX = aX-mean(aX(1:100));
-aY = aY-mean(aY(1:100));
-aZ = aZ-(mean(aZ(1:100)-9.81));
+aX = aX-mean(aX(10:100));
+aY = aY-mean(aY(10:100));
+aZg = aZ-(mean(aZ(10:100)-9.81));
+aZ = aZ-mean(aZ(10:100));
 
 
 
@@ -31,9 +32,6 @@ aFZ = zeros(length(aX),1);
 gFX = zeros(length(aX),1); 
 gFY = zeros(length(aX),1); 
 gFZ = zeros(length(aX),1); 
-thX = zeros(length(aX),1); 
-thY = zeros(length(aX),1); 
-thZ = zeros(length(aX),1); 
 thXg = zeros(length(aX),1); 
 thYg = zeros(length(aX),1); 
 thZg = zeros(length(aX),1); 
@@ -41,28 +39,36 @@ thZg = zeros(length(aX),1);
 pos=zeros(3,length(aX));           % Initial Position (X,Y,Z)
 pos(3,:)=1;
 
+%% Data Fusion with Kalman filter
+[thx, thy] = simpleKalFilt(aX,aY,aZg,gX,gY,ts);
+%extended KalmanFilter
+% KalFilt(aX,aY,aZg,gX,gY,ts);
 
 
+%% Main Loop
 for ii = filterWidth:length(aX)
     
-    % reduce noise of recorded Signal
+    
+   if (isnan(aX(ii))) || (isnan(aY(ii))) || (isnan(aZ(ii))) || (isnan(gX(ii))) || (isnan(gY(ii)))
+       continue
+        
+    end
+        
+    % reduce noise of recorded Signal with sliding window filter
         [aFX(ii), aFY(ii), aFZ(ii), gFX(ii), gFY(ii),gFZ(ii)] = filterNoise(aX(ii-filterWidth+1:ii),...
-            aY(ii-filterWidth+1:ii), aZ(ii-filterWidth+1:ii), gX(ii-filterWidth+1:ii), gY(ii-filterWidth+1:ii), gZ(ii-filterWidth+1:ii)); 
-        % calculate Angles
-    [thX(ii), thY(ii), thZ(ii)] = filterAngles(1, aFX(ii), aFY(ii), aFZ(ii), gFX(ii), gFY(ii),gFZ(ii),ts);
+            aY(ii-filterWidth+1:ii), aZ(ii-filterWidth+1:ii), gX(ii-filterWidth+1:ii), gY(ii-filterWidth+1:ii), gZ(ii-filterWidth+1:ii));   
     
-    
+    % Integrate Angles from gyroscopes;
     thXg(ii) = thXg(ii-1)+gFX(ii)*ts;
     thYg(ii) = thYg(ii-1)+gFY(ii)*ts;
     thZg(ii) = thZg(ii-1)+gFZ(ii)*ts;
     
     [hiFreq(ii), loFreq(ii)]=filt(thYg(ii));
-    [angle(ii),angle2(ii),hp(ii),tp(ii)]=compFilt(((-1)*atan2( aX(ii),aZ(ii) ) ),gFY(ii),ts);
-    [loFreq2(ii),hiFreq2(ii), angleC1(ii)] = compFilter(((-1)*atan2( aX(ii),aZ(ii) ) ), thYg(ii));
+    [angle(ii),angle2(ii),hp(ii),tp(ii)]=compFilt(((-1)*atan( aY(ii)/aZ(ii) ) ),gFX(ii),ts);
    
-    [pos(1,ii) pos(2,ii) pos(3,ii)] = getEuler(pos(1,ii-1),pos(2,ii-1),pos(3,ii-1),thXg(ii), thYg(ii), thZg(ii));
+   
+    [pos(1,ii) pos(2,ii) pos(3,ii)] = getEuler(pos(1,ii-1),pos(2,ii-1),pos(3,ii-1),thx(ii), thy(ii), 0);
     
-
 end
 
 

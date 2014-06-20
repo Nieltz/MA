@@ -1,4 +1,4 @@
-function  [aX, aY, aZ, gX, gY, gZ] = processSensData( lines, sensAcc, sensGyro)
+function  [aX, aY, aZ, gX, gY, gZ] = processSensData( lines, sensAcc, sensGyro, type)
 
 switch sensAcc
     case 2
@@ -28,12 +28,22 @@ switch sensGyro
         error('Gyro Sensitivity not supported');
 end
 
-aX=lines(5,:);
-aY=lines(7,:);
-aZ=lines(9,:);
-gX=lines(11,:);
-gY=lines(13,:);
-gZ=lines(15,:);
+if ~(strcmp(type,'Car'))
+    aX=lines(5,:);
+    aY=lines(7,:);
+    aZ=lines(9,:);
+    gX=lines(11,:);
+    gY=lines(13,:);
+    gZ=lines(15,:);
+else  
+    aX=lines(1,:);
+    aY=lines(2,:);
+    aZ=lines(3,:);
+    gX=lines(7,:);
+    gY=lines(8,:);
+    gZ=lines(9,:);
+end
+
 
 aX=aX.*lsb2ms2;
 aY=aY.*lsb2ms2;
