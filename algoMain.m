@@ -5,7 +5,7 @@ addpath('.\RecordedData');
 clear all; close all;
 
 %% Configure Test
-filename='N-Left-Right.txt';
+filename='1bis5.txt';
 
 ts= 0.001;
 
