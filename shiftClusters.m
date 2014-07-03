@@ -16,21 +16,21 @@ classdef shiftClusters <handle
     methods
         function obj = shiftClusters
             % Constructor
-            obj.c0 = [-15,15];
+            obj.c0 = [-8,15];
             obj.c1 = [0,15];
-            obj.c2 = [15,15];
+            obj.c2 = [8,15];
             obj.c3 = [0,0];
-            obj.c4 = [-15,-15];
+            obj.c4 = [-8,-15];
             obj.c5 = [0,-15];
-            obj.c6 = [15,-15];
+            obj.c6 = [8,-15];
         end
         
         function [clust, di]= run (obj, alpha, beta,oldDist)
-           % alpha = alpha - oldDist(1);
-           % beta = beta - oldDist(2);
-            [dist, di] = obj.getDistance(alpha, beta);
+           alp = alpha + oldDist(1)/2;
+           bet = beta + oldDist(2)/2;
+            [dist, di] = obj.getDistance(alp, bet);
             [d, clust] = min(dist);
-            obj.updateC(clust-1, alpha, beta);
+            obj.updateC(clust-1, alp, bet);
             
         end
         
@@ -71,19 +71,19 @@ classdef shiftClusters <handle
 %                 otherwise
 %                     error('wrong cluster selected');
                 case 0 
-                    obj.c0 = obj.c0.*0.99+0.01.*[alpha,beta];
+                    obj.c0 = obj.c0.*0.999+0.001.*[alpha,beta];
                 case 1
-                    obj.c1 = obj.c1.*0.99+0.01.*[alpha,beta];
+                    obj.c1 = obj.c1.*0.999+0.001.*[alpha,beta];
                 case 2
-                    obj.c2 = obj.c2.*0.99+0.01.*[alpha,beta];
+                    obj.c2 = obj.c2.*0.999+0.001.*[alpha,beta];
                 case 3
-                    obj.c3 = obj.c3.*0.99+0.01.*[alpha,beta];
+                    obj.c3 = obj.c3.*0.999+0.001.*[alpha,beta];
                 case 4
-                    obj.c4 = obj.c4.*0.99+0.01.*[alpha,beta];
+                    obj.c4 = obj.c4.*0.999+0.001.*[alpha,beta];
                 case 5
-                    obj.c5 = obj.c5.*0.99+0.01.*[alpha,beta];
+                    obj.c5 = obj.c5.*0.999+0.001.*[alpha,beta];
                 case 6
-                    obj.c6 = obj.c6.*0.99+0.01.*[alpha,beta];
+                    obj.c6 = obj.c6.*0.999+0.001.*[alpha,beta];
                 otherwise
                     error('wrong cluster selected');
             end
