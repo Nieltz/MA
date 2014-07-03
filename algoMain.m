@@ -1,6 +1,6 @@
 function algoMain()
-
-addpath('.\RecordedData');
+addpath RecordedData;
+addpath \RecordedData;
 
 clear all; close all;
 
