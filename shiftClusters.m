@@ -17,12 +17,12 @@ classdef shiftClusters <handle
         function obj = shiftClusters
             % Constructor
             obj.c0 = [-8,15];
-            obj.c1 = [0,15];
-            obj.c2 = [8,15];
-            obj.c3 = [0,0];
-            obj.c4 = [-8,-15];
-            obj.c5 = [0,-15];
-            obj.c6 = [8,-15];
+            obj.c2 = [0,15];
+            obj.c4 = [8,15];
+            obj.c6 = [0,0];
+            obj.c1 = [-8,-15];
+            obj.c3 = [0,-15];
+            obj.c5 = [8,-15];
         end
         
         function [clust, di]= run (obj, alpha, beta,oldDist)
