@@ -2,14 +2,20 @@ function shifts = findShifts()
 
 addpath ..
 
-fileList=dir(fullfile('.','*.mat'));
+%select desired files form Database
+startFileNo = 33;
+endFileNo =  33;
+runList = startFileNo:endFileNo; % set a vector with desired samples here!
+%load shifts;
 
+%fileList = {'1.txt.mat','2.txt.mat','3.txt.mat','4.txt.mat','5.txt.mat','R.txt.mat','1-2.txt.mat','1bis5.txt.mat'};
+readGearDatabase;
 % parse name
-for ii= 1:length(fileList) % start at 3 because first2 entries are . and ..
-    fileName=fileList(ii).name;
+for ii= runList % start at 3 because first2 entries are . and ..
     
-    load(fileName);
-    shifts{ii}=carAlgo(aX,aY,aZ,gX,gY,gZ);
+    load(gearFiles{ii});
+    shifts{ii,1}=carAlgo(aX,aY,aZ,gX,gY,gZ);
+    shifts{ii,2} = (gearFiles{ii});
     clear aX aY aZ gX gY gZ
 end
     
