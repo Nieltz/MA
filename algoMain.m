@@ -5,14 +5,18 @@ addpath \RecordedData;
 clear all; close all;
 
 %% Configure Test
-filename='nils3.txt';
+filename='N_Running.txt';
 matlabWS = 1; % set to one if matlab Workspace with read in Data exists
 
 ts= 0.001;
 
 
 filterWidth = 300;
+<<<<<<< HEAD
 if matlabWS == 0
+=======
+if matlabWS == 1
+>>>>>>> 28726d1ce584517ce05cb4286bccac0eb1a5d90d
     [lines, accData, gyroData]=readSensData(filename,'Car');
     [aZ, aY, aX, gX, gY, gZ] = processSensData(lines, accData(2), gyroData(3),'Car');
 else
