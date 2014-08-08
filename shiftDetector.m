@@ -56,6 +56,9 @@ classdef shiftDetector < handle
                 likelyhood=0;
             end
         end
+        
+        function [shiftDetect , likelyhood] = shiftDetection3(obj, thx)
+        end
     end
     
 end

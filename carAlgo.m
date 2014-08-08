@@ -6,7 +6,7 @@ ts=0.001;
 % KalFilt(aX,aY,aZg,gX,gY,ts);
 
 shiftClassifier = shiftClusters;
-shiftDetectorObj = shiftDetector(4,25);
+shiftDetectorObj = shiftDetector(4,30);
 
 dist = zeros(300,2);
 clust= ones(length(aX),1);
