@@ -20,7 +20,9 @@ feat5Old=[];
 feat6Old=[];
 feat7Old=[];
 
-for ii = 1:length(labeledFeatures)
+trainingssets = [ 1, 2, 3, 4, 5, 34, 35, 38, 39, 40, 49, 50 ,51, 52, 53 , 54 ,55, 58, 59, 60, 61, 62 63, 64 65];
+
+for ii = trainingssets
     features = labeledFeatures{ii};
     
     if isempty(features)
@@ -117,31 +119,31 @@ mu7=[m7X,m7Y];
 end
     a= -20:0.5:20;
             b= -20:0.5:20;
-            [A,B]=meshgrid(a,b);
-%             F= mvnpdf([A(:) B(:)],mu1,v1);
-%             F = reshape(F,length(b),length(a));
-            figure;
-%             surf(a,b,F)
+             [A,B]=meshgrid(a,b);
+             F= mvnpdf([A(:) B(:)],mu1,v1);
+             F = reshape(F,length(b),length(a));
+             figure;
+              surf(a,b,F)
             F= mvnpdf([A(:) B(:)],mu2,v2);
             F = reshape(F,length(b),length(a));
-%             hold on
+             hold on
             surf(a,b,F)
-%             F= mvnpdf([A(:) B(:)],mu3,v3);
-%             F = reshape(F,length(b),length(a));
-%             hold on
-%             surf(a,b,F)
+             F= mvnpdf([A(:) B(:)],mu3,v3);
+             F = reshape(F,length(b),length(a));
+             hold on
+             surf(a,b,F)
             F= mvnpdf([A(:) B(:)],mu4,v4);
             F = reshape(F,length(b),length(a));
             hold on
             surf(a,b,F)
-%             F= mvnpdf([A(:) B(:)],mu5,v5);
-%             F = reshape(F,length(b),length(a));
-%             hold on
-%              surf(a,b,F)
-%             F= mvnpdf([A(:) B(:)],mu6,v6);
-%             F = reshape(F,length(b),length(a));
-%             hold on
-%             surf(a,b,F);
+             F= mvnpdf([A(:) B(:)],mu5,v5);
+             F = reshape(F,length(b),length(a));
+             hold on
+               surf(a,b,F)
+%              F= mvnpdf([A(:) B(:)],mu6,v6);
+%              F = reshape(F,length(b),length(a));
+%              hold on
+%              surf(a,b,F);
 
 
 end
