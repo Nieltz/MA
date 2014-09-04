@@ -1,10 +1,10 @@
 addpath ..
-
+addpath .\TrainigData
 fileList=dir(fullfile('.','*.txt'));
 
 %select desired files form Database
-startFileNo = 33;
-endFileNo = 33;
+startFileNo = 61;
+endFileNo = 79;
 runList = startFileNo:endFileNo; % set a vector with desired samples here!
 %load shifts;
 

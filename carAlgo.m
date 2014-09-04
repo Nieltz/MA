@@ -5,10 +5,10 @@ ts=0.001;
 %extended KalmanFilter
 % KalFilt(aX,aY,aZg,gX,gY,ts);
 
-kalmanFilter = kalFilter();
+% kalmanFilter = kalFilter();
 
 shiftClassifier = shiftClusters;
-shiftDetectorObj = shiftDetector(4,30);
+shiftDetectorObj = shiftDetector(4,25);
 
 dist = zeros(300,2);
 clust= ones(length(aX),1);
@@ -30,19 +30,19 @@ for ii = 300:length(aX)
     
    [shift(ii), lklhd(ii)] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
    
-   if shift(ii)==1
-       holdShift=10;
-   else
-       holdShift = holdShift-1;
-   end
-   if holdShift > 0
-       shifted =1;
-   end
+%    if shift(ii)==1
+%        holdShift=10;
+%    else
+%        holdShift = holdShift-1;
+%    end
+%    if holdShift > 0
+%        shifted =1;
+%    end
    
-   [thx(ii),thy(ii)]=kalmanFilter.runFilter(aX(ii),aY(ii),aZ(ii),gX(ii),gY(ii),shifted); 
+%    [thx(ii),thy(ii)]=kalmanFilter.runFilter(aX(ii),aY(ii),aZ(ii),gX(ii),gY(ii),shifted); 
    
    if shift(ii) ==0
-        [clust(ll), dist] = shiftClassifier.run(-thy(ii),thx(ii),dist(clust(ll-1),:));
+%         [clust(ll), dist] = shiftClassifier.run(-thy(ii),thx(ii),dist(clust(ll-1),:));
         shifted =0;
     else
         if shifted == 0
@@ -50,7 +50,7 @@ for ii = 300:length(aX)
             shifts(k)=ii;
             k=k+1;
         end
-        dist = zeros(7,2);
+%         dist = zeros(7,2);
     end
     ll=ll+1;
    
