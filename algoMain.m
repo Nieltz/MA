@@ -1,6 +1,7 @@
 function algoMain()
 addpath RecordedData;
 addpath \RecordedData;
+addpath .\..\tools;
 
 clear all; close all;
 
@@ -9,7 +10,7 @@ load('svmModel.mat');
 
 
 %% Configure Test
-filename='nils5.txt';
+filename='nils1.txt';
 matlabWS = 1; % set to one if matlab Workspace with read in Data exists
 
 ts= 0.001;
@@ -40,9 +41,9 @@ gY = gY-mean(gY(10:100));
 %gZ = gZ-mean(gZ(10:100));
 
 % init variables
-aFX = zeros(length(aX),1);
+aFX = slidingWindowFilter(aX,300);
 aFY = slidingWindowFilter(aY,300);
-aFZ = zeros(length(aX),1);
+aFZ = slidingWindowFilter(aZ,300);
 gFX = zeros(length(aX),1);
 gFY = slidingWindowFilter(gY,300);
 gFZ = slidingWindowFilter(gZ,300);
@@ -80,7 +81,7 @@ bufCount =1;
 for ii = filterWidth:length(aX)
     
     % Shift Detection
-    [shift(ii), lklhd(ii)] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
+    [shift(ii), lklhd(ii)] = shiftDetectorObj.shiftDetection2(aFX(ii),aFY(ii),aFZ(ii),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
     
     if shift(ii)==1
         bufGY(1:200) = gFY((ii-200+1):ii);
@@ -109,6 +110,7 @@ for ii = filterWidth:length(aX)
         bufCount=1;
     end
 end
+keyboard;
 currentGear = 2;
 %% get direction for Y and X axis
 for ii = 1:(shifts-1)

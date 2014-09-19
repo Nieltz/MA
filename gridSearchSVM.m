@@ -15,7 +15,7 @@ load('labeledShifts2.mat');
 [excelShifts, excelText] =  xlsread('shifts.xlsx','shiftsForMatlab');
 [a textLineLength]=size(excelText);
 
-testSetNo = 16;
+testSetNo = 17;
 
 checkDetected =0;
 
@@ -116,7 +116,7 @@ for ii = C
             normLy   = trainingSamplesNorm(:,8);
             trainNorm1 = (testSet(:,1)-meanTsamples(1))./stdTsamples(1);
             trainNorm2 = (testSet(:,2)-meanTsamples(2))./stdTsamples(2);
-            trainNorm3= (testSet(:,3)-meanTsamples(3))./stdTsamples(3);
+            trainNorm3=  (testSet(:,3)-meanTsamples(3))./stdTsamples(3);
             trainNorm4 = (testSet(:,4)-meanTsamples(4))./stdTsamples(4);
             trainNorm5 = (testSet(:,5)-meanTsamples(5))./stdTsamples(5);
             trainNorm6 = (testSet(:,6)-meanTsamples(6))./stdTsamples(6);
@@ -127,7 +127,7 @@ for ii = C
            % [svmOut{indi,indj}, accuracy{indi,indj}, dec_values{indi,indj}]   = svmpredict(labels',trainingSamplesNorm,model);
            a = trainingSamplesNorm;
     %       [svmOut{indi,indj}, accuracy{indi,indj}, dec_values{indi,indj}] = svmpredict([-4;4;-3],[a(3:5,1),a(3:5,2),a(3:5,3),a(3:5,4),a(3:5,5),a(3:5,6),a(3:5,7),a(3:5,8)],model);
-           [svmOut{indi,indj}, accuracy{indi,indj}, dec_values{indi,indj}]  = svmpredict(testLabels,[trainNorm1,trainNorm2,trainNorm3,trainNorm4,trainNorm5,trainNorm6,trainNorm7,trainNorm8],model);
+           [svmOut{indi,indj}, accuracy{indi,indj}, dec_values{indi,indj}]  = svmpredict(testLabels,[trainNorm1,trainNorm2,trainNorm3,trainNorm4,trainNorm5,trainNorm6,trainNorm7,trainNorm8],model,'-b 1');
 %             testsvmOut = svmpredict(1,(normCorX(1)),testmodel);
 %             testsvmOut = svmpredict(1,(normCorX(2)),testmodel);
 %             testsvmOut = svmpredict(1,(normCorX(3)),testmodel);

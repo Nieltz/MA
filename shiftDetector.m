@@ -9,6 +9,9 @@ classdef shiftDetector < handle
         ax;
         ay;
         az;
+        alpha;
+        maskLength;
+        spaceLength;
     end
     
     methods
@@ -41,12 +44,15 @@ classdef shiftDetector < handle
             end
         end
         function [ shiftDetect, likelyhood]  = shiftDetection2(obj, ax,ay,az,ii)
+            % this function compares the acceleration to a given threshold
+            % and triggers a shift if the acceleratrion is higer than the
+            % threshold.
             obj.ax(mod(ii,500)+1)=ax;
             obj.ay(mod(ii,500)+1)=ay;
             obj.az(mod(ii,500)+1)=az;
             diffx = abs(max(obj.ax)-min(obj.ax));
-            diffy = abs(max(obj.ay)-min(obj.ax));
-            diffz = abs(max(obj.az)-min(obj.ax));
+            diffy = abs(max(obj.ay)-min(obj.ay));
+            diffz = abs(max(obj.az)-min(obj.az));
             
             if (diffx>obj.threshold)||(diffy>obj.threshold)||(diffz>obj.threshold)
                 shiftDetect = 1;
@@ -57,8 +63,57 @@ classdef shiftDetector < handle
             end
         end
         
-        function [shiftDetect , likelyhood] = shiftDetection3(obj, thx)
+        
+        function [shiftDetect , likelyhood] = shiftDetectionCa_Cfar(obj, aX)
+            %CA_CFAR
+            i_data=aX;
+            maxVal=[];
+            maxLoc=[];
+            
+            mask=ones(obj.maskLength,1);
+            mask(obj.maskLength/2-obj.spaceLength:obj.maskLength/2+obj.spaceLength)=0;
+            
+            N=sum(mask);
+            mask=find(mask);
+            for i=0:size(i_data,1)-obj.maskLength-1
+                th=sum(i_data(i+mask))/N;
+                if alpha*th<i_data(i+floor(obj.maskLength/2)+1)
+                    maxLoc=[maxLoc,i+floor(obj.maskLength/2)+1];
+                    maxVal=[maxVal,i_data(i+floor(obj.maskLength/2)+1)];
+                end
+            end
+            
+            
         end
+        
+        function [shiftDetect , likelyhood] = shiftDetectionOs_Cfar(obj, aX)
+            
+        end
+        
+        function [ maxVal,maxLoc ] = CA_CFAR( data,alpha,maskLength,spaceLength )
+            %CA_CFAR
+            i_data=data(:);
+            maxVal=[];
+            maxLoc=[];
+            
+            mask=ones(maskLength,1);
+            mask(maskLength/2-musd:maskLength/2+spaceLength)=0;
+            
+            N=sum(mask);
+            mask=find(mask);
+            for i=0:size(i_data,1)-maskLength-1
+                th=sum(i_data(i+mask))/N;
+                if alpha*th<i_data(i+floor(maskLength/2)+1)
+                    maxLoc=[maxLoc,i+floor(maskLength/2)+1];
+                    maxVal=[maxVal,i_data(i+floor(maskLength/2)+1)];
+                end
+            end
+            
+            
+        end
+        
+        
+        
     end
     
 end
