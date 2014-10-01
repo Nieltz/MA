@@ -10,6 +10,9 @@ ts = 0.001;
 startFileNo = 40;
 endFileNo =  78;
 runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
+
+runList=[12:32, 35:78];
+
 %load shifts;
 load('labeledShifts2.mat');
 [excelShifts, excelText] =  xlsread('shifts.xlsx','shiftsForMatlab');
@@ -19,10 +22,10 @@ checkDetected =0;
 
 jj=1;
 
-for ii = runList
+for jj = runList
     
-    for kk = 1:textLineLength
-        exText = excelText{ii-35,kk};
+    for ii = 1:textLineLength
+        exText = excelText{jj,ii};
         if ~(isempty(exText))
             checkDetected =1;
         end
@@ -39,7 +42,7 @@ for ii = runList
     else
         len=0;
     end
-    trainingLabels =  labelsforTransitions{ii};
+    trainingLabels =  labelsforTransitions{jj};
     labels(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,11);
     trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
         [trainingLabels(:,1),trainingLabels(:,2), trainingLabels(:,3), trainingLabels(:,4),trainingLabels(:,5),...
@@ -48,10 +51,10 @@ for ii = runList
 end
 
 %% normalize valus
-for ii=1:8   
-    meanTsamples(ii) = mean(trainingSamples(:,ii));
-    stdTsamples(ii) = std(trainingSamples(:,ii));
-    trainingSamplesNorm(:,ii) = (trainingSamples(:,ii)-meanTsamples(ii))./stdTsamples(ii);
+for jj=1:8
+    meanTsamples(jj) = mean(trainingSamples(:,jj));
+    stdTsamples(jj) = std(trainingSamples(:,jj));
+    trainingSamplesNorm(:,jj) = (trainingSamples(:,jj)-meanTsamples(jj))./stdTsamples(jj);
 end
 %labels = trainingLabels(:,11);
 svmOptionString= '-b -s 2 -t 3';
