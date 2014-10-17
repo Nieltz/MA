@@ -7,10 +7,12 @@ ts = 0.001;
 
 %select desired files form Database
 startFileNo = 14;
-endFileNo =  20;
-runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
+endFileNo =  32;
+%runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
+runList = [1:12, 14:20, 27,28, 36:78];%28];%,38:40];
 %load shifts;
 load('labeledShifts2.mat');
+load('labeledShiftswAngles.mat');
 [excelShifts, excelText] =  xlsread('shifts.xlsx','shiftsForMatlab');
 [a textLineLength]=size(excelText);
 checkDetected =0;
@@ -23,7 +25,7 @@ for jj= runList % start at 3 because first2 entries are . and ..
     load(fileName);
     exShift=excelShifts(excelShifts(:,1)==jj,:); % read Line with labels to selected shift from Eycel Data
     
-   for ii = 1:textLineLength
+    for ii = 1:textLineLength
         exText = excelText{jj,ii};
         if ~(isempty(exText))
             checkDetected =1;
@@ -36,34 +38,55 @@ for jj= runList % start at 3 because first2 entries are . and ..
         continue;
     end
     
-    
+    [thx, thy] = simpleKalFilt(aX,aY,aZ,gZ,gY,ts);
     gFY = slidingWindowFilter(gY,300);
     gFZ = slidingWindowFilter(gZ,300);
-    shiftDetectorObj = shiftDetector(4,25);
-    bufCount =1;    
+    shiftDetectorObj = shiftDetector(485,25);
+    bufCount =1;
     shifts=1;
+    startShift=51;
+    shift=zeros(length(aX),1);
     for ii = 300:length(aX)
         
         % Shift Detection
-        [shift(ii), lklhd(ii)] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
+        [shift(ii), startShift(ii), shiftPower] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),gY(startShift-50:ii-100),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
         
         if shift(ii)==1
             bufGY(1:200) = gFY((ii-200+1):ii);
             bufGZ(1:200) = gFZ((ii-200+1):ii);
             bufGZ(200+bufCount) = gFZ(ii);
             bufGY(200+bufCount) = gFY(ii);
+            bufTHX(1:200) = thx((ii-200+1):ii);
+            bufTHY(1:200) = thy((ii-200+1):ii);
+            bufTHX(200+bufCount) = thx(ii);
+            bufTHY(200+bufCount) = thy(ii);
             bufCount= bufCount+1;
             
             
         end
-        if (shift(ii-1)== 1 && shift(ii)==0)
-            % shift is done -> copy shift data
-            bufferGZ{shifts} = bufGZ;
-            bufferGY{shifts} = bufGY;
-            shifts=shifts+1;
-            clear bufGZ;
-            clear bufGY;
-            bufCount=1;
+        
+        if ((shift(ii-1)== 1 && shift(ii)==0 && ii-startShift(ii)>150)||(shift(end)==1))
+            if ((abs(shiftPower) > 4500) || (shift(end)==1))
+                % shift is done -> copy shift data
+                bufferGZ{shifts} = bufGZ;
+                bufferGY{shifts} = bufGY;
+                bufferTHX{shifts} = bufTHX;
+                bufferTHY{shifts} = bufTHY;
+                gzMeans(shifts)= mean(bufGZ);
+                if gzMeans(shifts) < -1
+                    dir(ii) =1; % movement to the left --> down shift
+                elseif(gzMeans(shifts)>=-3 && gzMeans(shifts) < 3.8)
+                    dir(ii) =0; % no movement in Y direction --> same gear or gear below or on top
+                else
+                    dir(11) =2; % movement to the right --> up shift
+                end
+                shifts=shifts+1;
+                clear bufGZ;
+                clear bufGY;
+                clear bufTHX;
+                clear bufTHY;
+                bufCount=1;
+            end
         end
     end
     
@@ -77,6 +100,8 @@ for jj= runList % start at 3 because first2 entries are . and ..
         [mCorY(ii), mIndex] = max(abs(corY(:)));
         [mTY(ii), mAY(ii), mLY(ii)] = ind2sub(size(corY),mIndex);
         mCorY(ii) = corY(mIndex);
+        bThx(ii) = getAngles(bufferTHX{ii});
+        bThy(ii) = getAngles(bufferTHY{ii});
     end
     
     
@@ -84,13 +109,15 @@ for jj= runList % start at 3 because first2 entries are . and ..
     for ii = 1:shifts-1
         [labelsforTransitionsX,labelsforTransitionsY,labelsforTransitionsVec] = getDirection(labelsForAngles(ii),labelsForAngles(ii+1));
         labelsforTrans(ii,:) = [mCorX(ii),mTX(ii), mAX(ii), mLX(ii), mCorY(ii),mTY(ii), mAY(ii), mLY(ii), labelsforTransitionsX, labelsforTransitionsY,labelsforTransitionsVec,labelsForAngles(ii),labelsForAngles(ii+1)];
+        labelsforTransWAngles(ii,:) =[mCorX(ii),mTX(ii), mAX(ii), mLX(ii), mCorY(ii),mTY(ii), mAY(ii), mLY(ii), bThx(ii), bThy(ii),  labelsforTransitionsX, labelsforTransitionsY,labelsforTransitionsVec,labelsForAngles(ii),labelsForAngles(ii+1)];
     end
-   labelsforTransitions{jj} = labelsforTrans;
-   
-   
-   
-    close all;
-    clear thx thy bufferGZ bufferGY labelsForAngles labelsforTrans mCorX mCorY mAX mTX mLX mTY mAY mLY labelsforTransitionsX labelsforTransitionsY labelsforTransitionsVec
-save('labeledShifts2.mat','labelsforTransitions');
     
- end
+    labelsforTransitions{jj} = labelsforTrans;
+    labelsForTransitionsWAngles{jj} = labelsforTransWAngles;
+    
+    
+    close all;
+    clear thx thy bufferGZ bufferGY labelsForAngles labelsforTrans mCorX mCorY mAX mTX mLX mTY mAY mLY bThx bThy labelsforTransitionsX labelsforTransitionsY labelsforTransitionsVec
+   % save('labeledShifts2.mat','labelsforTransitions');
+   save('labeledShiftswAngles.mat','labelsForTransitionsWAngles');
+end

@@ -106,8 +106,8 @@ classdef stDetector
             
         end
         function drawPdfs(obj)
-            a= -20:0.5:20;
-            b= -20:0.5:20;
+            a= 20:-0.5:-20;
+            b= 20:-0.5:-20;
             [A,B]=meshgrid(a,b);
             F= mvnpdf([A(:) B(:)],obj.mu1,obj.v1);
             F = reshape(F,length(b),length(a));
@@ -129,6 +129,10 @@ classdef stDetector
             F = reshape(F,length(b),length(a));
             hold on
             surf(a,b,F)
+            
+            xlabel('Angle Phi in Deg');
+            ylabel('Angle Theta in Deg');
+            zlabel('Probability Density');
 %             F= mvnpdf([A(:) B(:)],obj.mu6,obj.v6);
 %             F = reshape(F,length(b),length(a));
 %             hold on

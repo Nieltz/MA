@@ -3,16 +3,26 @@ function gridSearchSVM
 addpath ..
 addpath .\svm\matlab
 
-%fileList=dir(fullfile('.','*.mat'));
-ts = 0.001;
+% select whether movement Detection or gear detection should be done
+movementDetection=0;
+
 
 %select desired files form Database
 startFileNo = 40;
 endFileNo =  78;
 runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
-runList = [1:50];%40:78];
+runList = [1:78];%40:78];
 %load shifts;
-load('labeledShifts2.mat');
+if movementDetection ==0
+    load('labeledShifts2.mat');
+    labelPos= 11;
+else
+    load('labeledShiftswAngles.mat');
+    labelsforTransitions = labelsForTransitionsWAngles;
+    labelPos= 15;
+    
+end 
+
 [excelShifts, excelText] =  xlsread('shifts.xlsx','shiftsForMatlab');
 [a textLineLength]=size(excelText);
 
@@ -43,15 +53,15 @@ for ii = runList
         len=0;
     end
     trainingLabels =  labelsforTransitions{ii};
-    labels(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,11);
+    labels(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,labelPos);
     labels2(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,9);
     % select all features
-%     trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
-%         [trainingLabels(:,1),trainingLabels(:,2), trainingLabels(:,3), trainingLabels(:,4),trainingLabels(:,5),...
-%         trainingLabels(:,6),trainingLabels(:,7),trainingLabels(:,8)];
-    % select subset of features
     trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
-        [trainingLabels(:,1),trainingLabels(:,5)];,...
+        [trainingLabels(:,1),trainingLabels(:,2), trainingLabels(:,3), trainingLabels(:,4),trainingLabels(:,5),...
+        trainingLabels(:,6),trainingLabels(:,7),trainingLabels(:,8)];
+    % select subset of features
+%     trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
+%         [trainingLabels(:,1),trainingLabels(:,5)];,...
     %   trainingLabels(:,6),trainingLabels(:,7),trainingLabels(:,8)];
 %          trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
 %          [trainingLabels(:,1),trainingLabels(:,4),...
@@ -61,7 +71,7 @@ for ii = runList
 end
 
 testSet = labelsforTransitions{testSetNo};
-testLabels = testSet(:,11);
+testLabels = testSet(:,labelPos);
 lenTestSet = length(testLabels);
 
 %% normalize valus

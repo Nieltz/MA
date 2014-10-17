@@ -1,4 +1,4 @@
-function [ mu1, mu2, mu3, mu4, mu5, mu6, mu7, v1, v2,v3,v4,v5,v6,v7 ] = trainCarModelGauss ()
+function [ mu1, mu2, mu3, mu4, mu5, mu6, mu7, v1, v2,v3,v4,v5,v6,v7 ] = trainCarModelGauss (plotOn)
 % function to determin Gaussian ddistribution for labeled Data
 addpath RecordedData
 
@@ -117,33 +117,33 @@ mu7=[m7X,m7Y];
 
 
 end
-    a= -20:0.5:20;
-            b= -20:0.5:20;
-             [A,B]=meshgrid(a,b);
-             F= mvnpdf([A(:) B(:)],mu1,v1);
-             F = reshape(F,length(b),length(a));
-             figure;
-              surf(a,b,F)
-            F= mvnpdf([A(:) B(:)],mu2,v2);
-            F = reshape(F,length(b),length(a));
-             hold on
-            surf(a,b,F)
-             F= mvnpdf([A(:) B(:)],mu3,v3);
-             F = reshape(F,length(b),length(a));
-             hold on
-             surf(a,b,F)
-            F= mvnpdf([A(:) B(:)],mu4,v4);
-            F = reshape(F,length(b),length(a));
-            hold on
-            surf(a,b,F)
-             F= mvnpdf([A(:) B(:)],mu5,v5);
-             F = reshape(F,length(b),length(a));
-             hold on
-               surf(a,b,F)
-%              F= mvnpdf([A(:) B(:)],mu6,v6);
+%     a= -20:0.5:20;
+%             b= -20:0.5:20;
+%              [A,B]=meshgrid(a,b);
+%              F= mvnpdf([A(:) B(:)],mu1,v1);
+%              F = reshape(F,length(b),length(a));
+%              figure;
+%               surf(a,b,F)
+%             F= mvnpdf([A(:) B(:)],mu2,v2);
+%             F = reshape(F,length(b),length(a));
+%              hold on
+%             surf(a,b,F)
+%              F= mvnpdf([A(:) B(:)],mu3,v3);
 %              F = reshape(F,length(b),length(a));
 %              hold on
-%              surf(a,b,F);
+%              surf(a,b,F)
+%             F= mvnpdf([A(:) B(:)],mu4,v4);
+%             F = reshape(F,length(b),length(a));
+%             hold on
+%             surf(a,b,F)
+%              F= mvnpdf([A(:) B(:)],mu5,v5);
+%              F = reshape(F,length(b),length(a));
+%              hold on
+%                surf(a,b,F)
+% %              F= mvnpdf([A(:) B(:)],mu6,v6);
+% %              F = reshape(F,length(b),length(a));
+% %              hold on
+% %              surf(a,b,F);
 
 
 end
