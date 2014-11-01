@@ -47,7 +47,7 @@ for ii = runList
         continue;
     end
     %% create objects
-    shiftClassifier = shiftClusters;
+    shiftClassifier = shiftClusters(0,0);
     shiftDetectorObj = shiftDetector(485,25);
     classifier = stDetector();
     
@@ -75,7 +75,7 @@ for ii = runList
         if ((shift(jj-1)== 1 && shift(jj)==0 && jj-startShift(jj)>150)||(shift(end)==1))
             if ((abs(shiftPower) > 4500) || (shift(end)==1))
                 shifts=shifts+1;
-               % res(shifts+1) = trainingLabels(shifts,labelPos);
+                res(shifts+1) = trainingLabels(shifts,labelPos);
             end
         end
         if shift(jj) ==0

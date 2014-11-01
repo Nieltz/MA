@@ -15,7 +15,7 @@ load('svmModel.mat');
 
 readGearDatabase;
 
-testSet = 44;
+testSet = 34;
 fileName = gearFiles{testSet};
 load(fileName);
 
@@ -24,7 +24,7 @@ load(fileName);
 matlabWS = 1; % set to one if matlab Workspace with read in Data exists
 
 ts= 0.001;
-detMode =2; % select whether shift recognition is done with SVM == 0 nearest Mean ==1 or Gaussian ==2
+detMode =0; % select whether shift recognition is done with SVM == 0 nearest Mean ==1 or Gaussian ==2
 
 filterWidth = 300;
 
@@ -59,11 +59,11 @@ pos=zeros(3,length(aX));           % Initial Position (X,Y,Z)
 pos(3,:)=1;
 
 %% Data Fusion with Kalman filter
-[thx, thy] = simpleKalFilt(aX,aY,aZ,gZ,gY,ts);
-%out = kalFiltCpfComp(aX,aY,aZ,gZ,gY,gX,ts,shifts);
+%[thx, thy] = simpleKalFilt(aX,aY,aZ,gZ,gY,ts);
+out = kalFiltCpfComp(aX,aY,aZ,gZ,gY,gX,ts);
 
 %extended KalmanFilter
-% KalFilt(aX,aY,aZg,gX,gY,ts);
+%[thx, thy] = KalFilt(aX,aY,aZ,gZ,gY,gX,ts);
 %thx=simpleTP(thx);
 %thy=simpleTP(thy);
 
@@ -71,7 +71,7 @@ aTPX=simpleHP(aX);
 aTPY=simpleHP(aY);
 aTPZ=simpleHP(aZ);
 
-shiftClassifier = shiftClusters;
+%shiftClassifier = shiftClusters(0,0);
 shiftDetectorObj = shiftDetector(485,25);
 
 classifier = stDetector();
@@ -93,6 +93,10 @@ for ii = filterWidth:length(aX)
     % Shift Detection
     [shift(ii), startShift(ii), shiftPower] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),gY(startShift-50:ii-100),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
     
+    buGY(1:200) = gY((ii-200+1):ii);
+    buGZ(1:200) = gZ((ii-200+1):ii);
+    buGZ(200+bufCount) = gZ(ii);
+    buGY(200+bufCount) = gY(ii);
     bufGY(1:200) = gFY((ii-200+1):ii);
     bufGZ(1:200) = gFZ((ii-200+1):ii);
     bufGZ(200+bufCount) = gFZ(ii);
@@ -104,7 +108,7 @@ for ii = filterWidth:length(aX)
     bufCount= bufCount+1;
     
     
-end
+
 
 if ((shift(ii-1)== 1 && shift(ii)==0 && ii-startShift(ii)>150)||(shift(end)==1))
     if ((abs(shiftPower) > 4500) || (shift(end)==1))
@@ -127,7 +131,7 @@ if ((shift(ii-1)== 1 && shift(ii)==0 && ii-startShift(ii)>150)||(shift(end)==1))
         bufCount=1;
     end
 end
-
+end
 %keyboard;
 if detMode == 0
     currentGear = 2;
@@ -150,10 +154,10 @@ if detMode == 0
         normMty(ii) = (mTY(ii)-meanTsamples(6))/stdTsamples(6);
         normAy(ii)  = (mAY(ii)-meanTsamples(7))/stdTsamples(7);
         normLy(ii)  = (mLY(ii)-meanTsamples(8))/stdTsamples(8);
-        
-        svmOut(ii)=svmpredict(0.5,[mCorX(ii),mTX(ii), mAX(ii), mLX(ii),mCorY(ii), mTY(ii), mAY(ii), mLY(ii)],model);
-        svmOut(ii)=svmpredict(0.5,[normCorX(ii),normMtx(ii), normAx(ii), normLx(ii),normCorY(ii), normMty(ii), normAy(ii), normLy(ii)],model);
-        currentGear(ii+1) = decShift(currentGear(ii), svmOut(ii));
+        keyboard;
+       % svmOut(ii)=svmpredict(0.5,[mCorX(ii),mTX(ii), mAX(ii), mLX(ii),mCorY(ii), mTY(ii), mAY(ii), mLY(ii)],model);
+       % svmOut(ii)=svmpredict(0.5,[normCorX(ii),normMtx(ii), normAx(ii), normLx(ii),normCorY(ii), normMty(ii), normAy(ii), normLy(ii)],model);
+       % currentGear(ii+1) = decShift(currentGear(ii), svmOut(ii));
     end
     keyboard;
 elseif (detMode ==2)

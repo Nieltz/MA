@@ -20,7 +20,7 @@ feat5Old=[];
 feat6Old=[];
 feat7Old=[];
 
-trainingssets = [ 1, 2, 3, 4, 5, 34, 35, 38, 39, 40, 49, 50 ,51, 52, 53 , 54 ,55, 58, 59, 60, 61, 62 63, 64 65];
+trainingssets = [ 1, 2, 3, 4, 5,6, 34, 35, 38, 39, 40, 49, 50 ,51, 52, 53 , 54 ,55, 58, 59, 60, 61, 62 63, 64 65];
 
 for ii = trainingssets
     features = labeledFeatures{ii};

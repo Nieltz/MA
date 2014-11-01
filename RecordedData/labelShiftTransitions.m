@@ -6,8 +6,8 @@ addpath ..
 ts = 0.001;
 
 %select desired files form Database
-startFileNo = 14;
-endFileNo =  32;
+startFileNo = 34;
+endFileNo =  34;
 %runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
 runList = [1:12, 14:20, 27,28, 36:78];%28];%,38:40];
 %load shifts;
@@ -51,18 +51,18 @@ for jj= runList % start at 3 because first2 entries are . and ..
         % Shift Detection
         [shift(ii), startShift(ii), shiftPower] = shiftDetectorObj.shiftDetection2(aX(ii),aY(ii),aZ(ii),gY(startShift-50:ii-100),ii);%(aTPX(ii)-aTPX(ii-1)),(aTPY(ii)-aTPY(ii-1)),(aTPZ(ii)-aTPZ(ii-1)),ii);
         
-        if shift(ii)==1
+        if  (shift(ii-1)== 0 && shift(ii)==1)
             bufGY(1:200) = gFY((ii-200+1):ii);
             bufGZ(1:200) = gFZ((ii-200+1):ii);
-            bufGZ(200+bufCount) = gFZ(ii);
-            bufGY(200+bufCount) = gFY(ii);
             bufTHX(1:200) = thx((ii-200+1):ii);
             bufTHY(1:200) = thy((ii-200+1):ii);
+        end
+         if shift(ii)==1
+            bufGZ(200+bufCount) = gFZ(ii);
+            bufGY(200+bufCount) = gFY(ii);
             bufTHX(200+bufCount) = thx(ii);
             bufTHY(200+bufCount) = thy(ii);
             bufCount= bufCount+1;
-            
-            
         end
         
         if ((shift(ii-1)== 1 && shift(ii)==0 && ii-startShift(ii)>150)||(shift(end)==1))

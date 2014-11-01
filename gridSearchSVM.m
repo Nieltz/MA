@@ -4,11 +4,11 @@ addpath ..
 addpath .\svm\matlab
 
 % select whether movement Detection or gear detection should be done
-movementDetection=0;
+movementDetection=2;
 
 
 %select desired files form Database
-startFileNo = 40;
+startFileNo = 1;
 endFileNo =  78;
 runList = [startFileNo:endFileNo]; % set a vector with desired samples here!
 runList = [1:78];%40:78];
@@ -56,9 +56,16 @@ for ii = runList
     labels(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,labelPos);
     labels2(len+1:len+length(trainingLabels(:,1))) = trainingLabels(:,9);
     % select all features
-    trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
+   
+    if movementDetection ==0
+        trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
         [trainingLabels(:,1),trainingLabels(:,2), trainingLabels(:,3), trainingLabels(:,4),trainingLabels(:,5),...
         trainingLabels(:,6),trainingLabels(:,7),trainingLabels(:,8)];
+    else
+         trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
+        [trainingLabels(:,1),trainingLabels(:,2), trainingLabels(:,3), trainingLabels(:,4),trainingLabels(:,5),...
+        trainingLabels(:,6),trainingLabels(:,7),trainingLabels(:,8),trainingLabels(:,9),trainingLabels(:,10)];
+    end
     % select subset of features
 %     trainingSamples(len+1:len+length(trainingLabels(:,1)),:) = ...
 %         [trainingLabels(:,1),trainingLabels(:,5)];,...
@@ -106,7 +113,7 @@ for ii = C
 %                 continue;
 %             end
             
-            svmOptionString{indi,indj}= ['-s 0 -b 1 -g ',num2str(2^jj),' -c ',num2str(2^ii),' -t 2 -v 5',];
+            svmOptionString{indi,indj}= ['-s 0 -b 1 -g ',num2str(2^jj),' -c ',num2str(2^ii),' -t 2 -v 10',];
             testmodel = svmtrain2(labels2',[trainingSamplesNorm(:,1)],svmOptionString);
             model(indi,indj) = svmtrain2(labels',trainingSamplesNorm,svmOptionString{indi,indj});
     end

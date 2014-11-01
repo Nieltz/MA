@@ -1,4 +1,4 @@
-function out=  kalFiltCpfComp(accx,accy,accz,waccx,waccy,waccz,ts,shifts)
+function out=  kalFiltCpfComp(accx,accy,accz,waccx,waccy,waccz,ts)
 
 r1=10;
 r2=0.1;
@@ -55,6 +55,7 @@ I=eye(8);
 kk=1;
 v=zeros(length(accx),1);
 holdOffTime=500;
+shift = 2;
 for ii=1:length(accx)
     
     %% Check for bad input Data
@@ -69,15 +70,20 @@ for ii=1:length(accx)
         v(kk+1) = v(kk)+(accx(ii)-9.81*sind(x(2)))*ts;
 
 %     end
+
+
+if (ii == 12143)||(ii == 20808)||(ii == 28019)||(ii == 34804)||(ii == 44580)
+    shift = shift+1;
+end
     %% Precalculations         
-    aYc(kk) =0.125;% waccz(ii)*v(kk);% (accx(ii)-9.81*sind(x(2)))*ts;
+    aYc(kk) = waccz(ii)*getV((shift));% (accx(ii)-9.81*sind(x(2)))*ts;
     mThy =-atan2d(accy(ii)+aYc(kk),accz(ii));
     mThx = atan2d(accx(ii),accz(ii));
     A = getJforA(waccz(ii),ts);
     %% Kalman Filter
     x = f(x);%getX(x,ts,shifts(ii)); % preditct State;
     P = A*P*A' + Q;
-    z = [mThy,mThx, waccy(ii),waccx(ii),waccz(ii),accx(ii),-aYc(ii)-9.81*sind(x(1))*ts,accz(ii)];
+    z = [mThy,mThx, waccy(ii),waccx(ii),waccz(ii),accx(ii),-aYc(ii)+accy(ii),accz(ii)];
     J_h = getJforH(accx(ii),accy(ii),accz(ii),waccz(ii),ts);
     y = z' - H*x;
     S = J_h*P*J_h' + R;
